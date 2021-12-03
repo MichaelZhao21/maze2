@@ -7,3 +7,5 @@ Clone this repository, navigate to the directory, and run the program with the c
 ```
 mvn clean javafx:run
 ```
+
+Alternatively, you can clone the project in Intellij IDEA, and it should automatically create the proper build instances.

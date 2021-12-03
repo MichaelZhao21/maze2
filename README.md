@@ -1,6 +1,8 @@
-# maze2
+# Maze Generator and Solver
 
-Run the program with the command
+To run, you will need Maven. You can install using the instructions found at this link: [https://devwithus.com/install-maven-windows/](https://devwithus.com/install-maven-windows/)
+
+Clone this repository, navigate to the directory, and run the program with the command:
 
 ```
 mvn clean javafx:run

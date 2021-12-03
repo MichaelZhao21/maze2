@@ -17,6 +17,9 @@ Alternatively, you can clone the project in Intellij IDEA, and it should automat
 ## File Info
 
 Main code: `src/main/java/xyz/michaelzhao/maze2/`
+
 Screenshots: `screenshots/`
+
 Test Cases: `maze-test-cases/`
+
 Bonus Analysis: `BONUS_ANALYSIS.txt`

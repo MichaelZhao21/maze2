@@ -23,3 +23,7 @@ Screenshots: `screenshots/`
 Test Cases: `maze-test-cases/`
 
 Bonus Analysis: `BONUS_ANALYSIS.txt`
+
+## Preview
+
+![Maze image](screenshots/ss5.jpg)

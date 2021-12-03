@@ -135,10 +135,9 @@ public class MazeApplication extends Application {
                     // Parse n and m and check for bounds
                     int n = Integer.parseInt(nField.getText());
                     int m = Integer.parseInt(mField.getText());
-                    if (n > 100 || n < 2 || m > 100 || m < 2) {
-                        showErrorPopup(dialog, "ERROR: Please enter 2 integers between 2 and 100 for n and m values.");
-                    }
-                    else {
+                    if (n > 225 || n < 3 || m > 225 || m < 3) {
+                        showErrorPopup(dialog, "ERROR: Please enter 2 integers between 3 and 225 for n and m values.");
+                    } else {
                         // If all conditions met, generate maze
                         mazeRunner.generateMaze(n, m);
 
@@ -148,7 +147,7 @@ public class MazeApplication extends Application {
                         updateInfo();
                     }
                 } catch (NumberFormatException e) {
-                    showErrorPopup(dialog, "ERROR: Please enter 2 integers between 2 and 100 for n and m values.");
+                    showErrorPopup(dialog, "ERROR: Please enter 2 integers between 3 and 225 for n and m values.");
                 }
             });
             grid.add(submit, 1, 2);
@@ -207,8 +206,7 @@ public class MazeApplication extends Application {
             else {
                 showErrorPopup(stage, "ERROR: No possible path found!!!");
             }
-        }
-        else if (value == 5) {
+        } else if (value == 5) {
             // Solve Maze with Breaks
             // Create stage to prompt for p
             Stage dialog = new Stage();
@@ -254,7 +252,8 @@ public class MazeApplication extends Application {
 
                     // Show the maze when it is solved, and it should not error ://
                     if (solveSuccess) showMaze(true, true);
-                    else showErrorPopup(stage, "ERROR: Path should be possible because all walls can be broken, but I cannot find a path TwT");
+                    else
+                        showErrorPopup(stage, "ERROR: Path should be possible because all walls can be broken, but I cannot find a path TwT");
                 } catch (NumberFormatException e) {
                     // Show error if user does not enter an integer
                     showErrorPopup(dialog, "ERROR: Please enter an integer for the penalty value");
@@ -277,22 +276,33 @@ public class MazeApplication extends Application {
         if (mazeRunner.maze == null) return;
 
         // Calculate the ideal dimensions
-        int cellSize = 5;
-        if (mazeRunner.m < 50 && mazeRunner.n < 50) cellSize = 8;
-        if (mazeRunner.m < 25 && mazeRunner.n < 25) cellSize = 20;
+        int cellSize = 2;
+        if (mazeRunner.m < 100 && mazeRunner.n < 100) cellSize = 4;
+        if (mazeRunner.m < 50 && mazeRunner.n < 50) cellSize = 7;
+        if (mazeRunner.m < 25 && mazeRunner.n < 25) cellSize = 18;
         if (mazeRunner.m < 10 && mazeRunner.n < 10) cellSize = 30;
+
+        // Calculate dimensions
+        int width = cellSize * (mazeRunner.m * 2 + 1);
+        int height = cellSize * (mazeRunner.n * 2 + 1);
 
         // Create stage to show maze
         Stage dialog = new Stage();
         dialog.initModality(Modality.APPLICATION_MODAL);
         dialog.initOwner(stage);
         Group dialogRoot = new Group();
-        Scene dialogScene = new Scene(dialogRoot, cellSize * (mazeRunner.m * 2 + 1), cellSize * (mazeRunner.n * 2 + 1));
+        Scene dialogScene = new Scene(dialogRoot, width, height + (solved ? (mazeRunner.m * mazeRunner.n > 10000 ? 150 : (mazeRunner.m * mazeRunner.n > 2500 ? 100 : 50)) : 0));
+
+        // Create VBox for text/canvas
+        VBox box = new VBox();
+        box.setSpacing(5);
+        box.setPadding(Insets.EMPTY);
+        box.setAlignment(Pos.CENTER);
 
         // Create canvas and get graphics context
         Canvas canvas = new Canvas();
-        canvas.setWidth(cellSize * (mazeRunner.m * 2 + 1));
-        canvas.setHeight(cellSize * (mazeRunner.n * 2 + 1));
+        canvas.setWidth(width);
+        canvas.setHeight(height);
         GraphicsContext gc = canvas.getGraphicsContext2D();
         gc.setFill(Color.BLACK);
 
@@ -323,8 +333,27 @@ public class MazeApplication extends Application {
         gc.fillRect(0, cellSize, cellSize, cellSize);
         gc.fillRect(cellSize * (mazeRunner.m * 2), cellSize * (mazeRunner.n * 2 - 1), cellSize, cellSize);
 
+        // Create output list if solved
+        MazeNode curr = mazeRunner.maze[0][0];
+        StringBuilder sb = new StringBuilder();
+        if (solved) {
+            while (curr.child != null) {
+                if (curr.child.y < curr.y) sb.append("N");
+                else if (curr.child.x > curr.x) sb.append("E");
+                else if (curr.child.y > curr.y) sb.append("S");
+                else sb.append("W");
+                curr = curr.child;
+            }
+        }
+
+        // Add text
+        Text path = new Text(sb.toString());
+        path.setTextAlignment(TextAlignment.CENTER);
+        path.setWrappingWidth(width);
+
         // Add children
-        dialogRoot.getChildren().add(canvas);
+        box.getChildren().addAll(canvas, path);
+        dialogRoot.getChildren().add(box);
         dialog.setScene(dialogScene);
         dialog.show();
 
@@ -358,16 +387,13 @@ public class MazeApplication extends Application {
             if (curr.y > 0 && curr.child.equals(mazeRunner.maze[curr.y - 1][curr.x])) {
                 if (breakWalls && !curr.north) gc.setFill(wallBreakColor);
                 gc.fillRect(rx, ry - cellSize, cellSize, cellSize);
-            }
-            else if (curr.x < mazeRunner.m - 1 && curr.child.equals(mazeRunner.maze[curr.y][curr.x + 1])) {
+            } else if (curr.x < mazeRunner.m - 1 && curr.child.equals(mazeRunner.maze[curr.y][curr.x + 1])) {
                 if (breakWalls && !curr.east) gc.setFill(wallBreakColor);
                 gc.fillRect(rx + cellSize, ry, cellSize, cellSize);
-            }
-            else if (curr.y < mazeRunner.n - 1 && curr.child.equals(mazeRunner.maze[curr.y + 1][curr.x])) {
+            } else if (curr.y < mazeRunner.n - 1 && curr.child.equals(mazeRunner.maze[curr.y + 1][curr.x])) {
                 if (breakWalls && !curr.south) gc.setFill(wallBreakColor);
                 gc.fillRect(rx, ry + cellSize, cellSize, cellSize);
-            }
-            else {
+            } else {
                 if (breakWalls && !curr.west) gc.setFill(Paint.valueOf("#4332fc"));
                 gc.fillRect(rx - cellSize, ry, cellSize, cellSize);
             }

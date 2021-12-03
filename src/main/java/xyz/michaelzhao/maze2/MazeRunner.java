@@ -9,6 +9,11 @@ public class MazeRunner {
     MazeNode[][] maze;
     int n, m;
 
+    /**
+     * Generates the maze using the maze generator
+     * @param n number of rows
+     * @param m number of columns
+     */
     public void generateMaze(int n, int m) {
         this.n = n;
         this.m = m;
@@ -56,9 +61,6 @@ public class MazeRunner {
 
         // Close writer
         writer.close();
-    }
-
-    public void printMaze() {
     }
 
     public boolean solveMaze() {
@@ -171,9 +173,6 @@ public class MazeRunner {
         // Convert to matrix and return success
         parentToChildren(headDummy);
         return true;
-    }
-
-    public void setPenalty() {
     }
 
     private void clearMaze() {

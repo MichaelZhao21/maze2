@@ -26,4 +26,6 @@ Bonus Analysis: `BONUS_ANALYSIS.txt`
 
 ## Preview
 
+This is the shortest path for a 30x30 maze, with a penalty of 4 for breaking walls. 
+
 ![Maze image](screenshots/ss5.jpg)
